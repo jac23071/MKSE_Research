@@ -20,7 +20,7 @@ def hashing_alg(data_piece, table_size):
     placement_2 = int(hash_obj.hexdigest(), 16) % table_size
 
     if (placement_1 == placement_2):
-        inverse_piece += "urmom"
+        inverse_piece += "abcxyz"
         hash_obj.update(inverse_piece.encode())
         placement_2 = int(hash_obj.hexdigest(), 16) % table_size
 
