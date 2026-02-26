@@ -42,6 +42,7 @@ def place_data(data_dict, table, cache, max_swaps):
     """
     highest_num_swaps = 0
     start_time = time()
+    list_num_swaps = []
 
     for word in data_dict:
         loc = data_dict[word][0]
@@ -60,6 +61,7 @@ def place_data(data_dict, table, cache, max_swaps):
                 if (num_swaps == max_swaps):
                     cache.append(swap_word)
                     highest_num_swaps = max_swaps
+                    list_num_swaps.append(num_swaps)
                     break
 
                 else:
@@ -74,22 +76,36 @@ def place_data(data_dict, table, cache, max_swaps):
                         if (num_swaps > highest_num_swaps):
                             highest_num_swaps = num_swaps
                             break
+            list_num_swaps.append(num_swaps)
+
             if (table[new_loc] == float('-inf')):
                 table[new_loc] = swap_word
     end_time = time()
     total_time = end_time - start_time
 
-    print("Total time = " + str(total_time) + " and highest number of swaps = " + str(highest_num_swaps))
-    print("Table: \n---------------------------------")
-    print(table)
-    print("Cache: \n---------------------------------")
-    print(cache)
+    # print("Total time = " + str(total_time) + " and highest number of swaps = " + str(highest_num_swaps))
+    # print("Table: \n---------------------------------")
+    # print(table)
+    # print("Cache: \n---------------------------------")
+    # print(cache)
+    avg = 0
+    sum = 0
+    for i in range(len(list_num_swaps)):
+        sum += list_num_swaps[i]
+        avg = float(sum)/float((len(list_num_swaps)))
+
+    with open("result_file.txt", "w+") as outfile:
+        outfile.write(str(len(data_dict) - len(cache)))
+        outfile.write("\n")
+        outfile.write(str(len(cache)))
+        outfile.write("\n")
+        outfile.write(str(avg))
             
     
 if __name__ == "__main__":
     #Important Vars
-    scale = 1
-    max_swaps = 30
+    scale = 2.000
+    max_swaps = 2000
     raw_data = sys.argv[1:]
     # raw_data = ["BIG", "SMALL", "HUGE", "TINY", "ENORMOUS", "MINISCULE"]
 
