@@ -44,14 +44,14 @@ if (__name__ == "__main__"):
         cache_sizes.append(trial_results[i][1])
         avg_num_swaps.append(trial_results[i][2])
     
-    pplt.title("Input size vs. Table Storage and Cache size \n (Table scale: x2.00)", fontsize = 18)
-    pplt.xlabel("Input size (Number of words)", fontsize = 16)
-    pplt.ylabel("Number of stored words", fontsize = 16)
-    pplt.plot(list_sizes, table_sizes, marker = 'v', color = "#ff3355")
-    pplt.plot(list_sizes, cache_sizes, marker = 'o', color = "#05f7db")
-    pplt.xlim(0, 10000)
-    pplt.ylim(0, 10000)
-    pplt.savefig("fig_2.00.png")
+    # pplt.title("Input size vs. Table Storage and Cache size \n (Table scale: x2.00)", fontsize = 18)
+    # pplt.xlabel("Input size (Number of words)", fontsize = 16)
+    # pplt.ylabel("Number of stored words", fontsize = 16)
+    # pplt.plot(list_sizes, table_sizes, marker = 'v', color = "#ff3355")
+    # pplt.plot(list_sizes, cache_sizes, marker = 'o', color = "#05f7db")
+    # pplt.xlim(0, 10000)
+    # pplt.ylim(0, 10000)
+    # pplt.savefig("fig_2.00.png")
 
     # sum = 0
     # avg = 0
@@ -63,13 +63,44 @@ if (__name__ == "__main__"):
     #     avgs.write("2.000 : " + str(avg))
     #     avgs.write('\n')
     
-    pplt.title("Table Scale vs. Average Number of Swaps", fontsize = 18)
-    pplt.xlabel("Table Scale Relative to Input Size", fontsize = 16)
-    pplt.ylabel("Average Number of Swaps", fontsize = 16)
-    pplt.plot([1.000, 1.125, 1.250, 1.375, 1.500, 1.625, 1.750, 1.875, 2.000], [1670.225164723272, 1632.9702387257225, 1370.7204949813502, 1494.213356329819, 1274.8802132172502, 1373.5472146714317, 1138.9927323344707, 1345.8778474392627, 1214.675838093912], marker = '*', color = "#43d11f")
-    pplt.xlim(1, 2)
-    pplt.ylim(1000, 1750)
-    pplt.savefig("fig_ScaleVSwap.png")
+    # pplt.title("Table Scale vs. Average Number of Swaps", fontsize = 18)
+    # pplt.xlabel("Table Scale Relative to Input Size", fontsize = 16)
+    # pplt.ylabel("Average Number of Swaps", fontsize = 16)
+    # pplt.plot([1.000, 1.125, 1.250, 1.375, 1.500, 1.625, 1.750, 1.875, 2.000], [1670.225164723272, 1632.9702387257225, 1370.7204949813502, 1494.213356329819, 1274.8802132172502, 1373.5472146714317, 1138.9927323344707, 1345.8778474392627, 1214.675838093912], marker = '*', color = "#43d11f")
+    # pplt.xlim(1, 2)
+    # pplt.ylim(1000, 1750)
+    # pplt.savefig("fig_ScaleVSwap.png")
 
+    # pplt.title("Input size vs. Cache size \n (Max Swaps: 10000)", fontsize = 18)
+    # pplt.xlabel("Input size (Number of words)", fontsize = 16)
+    # pplt.ylabel("Number of stored words", fontsize = 16)
+    # pplt.plot(list_sizes, cache_sizes, marker = 'o', color = "#05f7db")
+    # pplt.xlim(0, 10000)
+    # pplt.ylim(0, 2000)
+    # pplt.savefig("fig_10000s_2.png")
+
+    # sum = 0
+    # avg = 0
+    # for i in range(len(avg_num_swaps)):
+    #     sum += avg_num_swaps[i]
+    #     avg = float(sum) / float(len(avg_num_swaps))
     
+    # with open("avgs_swap_test2.txt", "a+") as avgs:
+    #     avgs.write("Maximum 10000 Swaps : " + str(avg))
+    #     avgs.write('\n')
     
+    pplt.title("Maximum Number of Swaps vs. Average Number of Swaps", fontsize = 18)
+    pplt.xlabel("Maximum Number of Swaps", fontsize = 16)
+    pplt.ylabel("Average Number of Swaps", fontsize = 16)
+    pplt.plot([5, 25, 50, 100, 500, 1000, 10000], [3.7133611917780196, 17.229766051594595, 34.12208964096589, 67.90673681970848, 338.1839142496492, 676.030386037075, 6757.266878210741], marker = '*', color = "#fccf38")
+    pplt.xlim(0, 10000)
+    pplt.ylim(0, 7000)
+
+    pplt.title("Maximum Number of Swaps vs. Average Number of Swaps", fontsize = 18)
+    #(Table Scale = 1.8 (Orange) and 2.2 (Purple))
+    pplt.xlabel("Maximum Number of Swaps", fontsize = 16)
+    pplt.ylabel("Average Number of Swaps", fontsize = 16)
+    pplt.plot([5, 25, 50, 100, 500, 1000, 10000], [3.3596471719661047, 14.50955198554369, 28.465172372053516, 56.376413145073165, 279.66633932923037, 558.7787470594269, 5582.802086202964], marker = '*', color = "#e629f0")
+    pplt.xlim(0, 10000)
+    pplt.ylim(0, 7000)
+    pplt.savefig("fig_MaxVAvg.png")
