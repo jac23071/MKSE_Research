@@ -104,8 +104,8 @@ def place_data(data_dict, table, cache, max_swaps):
     
 if __name__ == "__main__":
     #Important Vars
-    scale = 2.2
-    max_swaps = 10000
+    scale = 1.8
+    max_swaps = 15
     raw_data = sys.argv[1:]
     # raw_data = ["BIG", "SMALL", "HUGE", "TINY", "ENORMOUS", "MINISCULE"]
 

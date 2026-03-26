@@ -1,0 +1,8 @@
+Maximum 1 Swap : 1.0
+Maximum 3 Swaps : 2.178938712300417
+Maximum 5 Swaps : 3.3596471719661047
+Maximum 7 Swaps : 4.461505307256615
+Maximum 9 Swaps : 5.577954938177401
+Maximum 11 Swaps : 6.694404569098188
+Maximum 13 Swaps : 7.810854200018974
+Maximum 15 Swaps : 8.92730383093976

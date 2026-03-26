@@ -71,36 +71,45 @@ if (__name__ == "__main__"):
     # pplt.ylim(1000, 1750)
     # pplt.savefig("fig_ScaleVSwap.png")
 
-    # pplt.title("Input size vs. Cache size \n (Max Swaps: 10000)", fontsize = 18)
+    # # Plot Input size vs Cache Size graphs
+    # #######################################################################
+    # pplt.title("Input size vs. Cache size \n (Max Swaps: 15)", fontsize = 18)
     # pplt.xlabel("Input size (Number of words)", fontsize = 16)
     # pplt.ylabel("Number of stored words", fontsize = 16)
     # pplt.plot(list_sizes, cache_sizes, marker = 'o', color = "#05f7db")
     # pplt.xlim(0, 10000)
     # pplt.ylim(0, 2000)
-    # pplt.savefig("fig_10000s_2.png")
-
+    # pplt.savefig("Small_Swaps/fig_15s_small_1.8.png")
+    # ########################################################################
+    
+    # #Add avgs to file:
+    # #########################################################################
     # sum = 0
     # avg = 0
     # for i in range(len(avg_num_swaps)):
     #     sum += avg_num_swaps[i]
     #     avg = float(sum) / float(len(avg_num_swaps))
     
-    # with open("avgs_swap_test2.txt", "a+") as avgs:
-    #     avgs.write("Maximum 10000 Swaps : " + str(avg))
+    # with open("Small_Swaps/avgs_swap_test_small_1.8.txt", "a+") as avgs:
+    #     avgs.write("Maximum 15 Swaps : " + str(avg))
     #     avgs.write('\n')
-    
+    # ##########################################################################
+
+    #Plot avgs into graph
+    ##########################################################################
     pplt.title("Maximum Number of Swaps vs. Average Number of Swaps", fontsize = 18)
     pplt.xlabel("Maximum Number of Swaps", fontsize = 16)
     pplt.ylabel("Average Number of Swaps", fontsize = 16)
-    pplt.plot([5, 25, 50, 100, 500, 1000, 10000], [3.7133611917780196, 17.229766051594595, 34.12208964096589, 67.90673681970848, 338.1839142496492, 676.030386037075, 6757.266878210741], marker = '*', color = "#fccf38")
+    pplt.plot([1, 3, 5, 7, 9, 11, 13, 15], [1.0, 2.359938892123858, 3.7133611917780196, 5.067130243054754, 6.418678954396966, 7.770064841546669, 9.121450728696374, 10.472836615846077], marker = '*', color = "#fccf38")
     pplt.xlim(0, 10000)
     pplt.ylim(0, 7000)
 
-    pplt.title("Maximum Number of Swaps vs. Average Number of Swaps", fontsize = 18)
+    pplt.title("Max Num of Swaps vs. Avg Num of Swaps", fontsize = 18)
     #(Table Scale = 1.8 (Orange) and 2.2 (Purple))
     pplt.xlabel("Maximum Number of Swaps", fontsize = 16)
     pplt.ylabel("Average Number of Swaps", fontsize = 16)
-    pplt.plot([5, 25, 50, 100, 500, 1000, 10000], [3.3596471719661047, 14.50955198554369, 28.465172372053516, 56.376413145073165, 279.66633932923037, 558.7787470594269, 5582.802086202964], marker = '*', color = "#e629f0")
-    pplt.xlim(0, 10000)
-    pplt.ylim(0, 7000)
-    pplt.savefig("fig_MaxVAvg.png")
+    pplt.plot([1, 3, 5, 7, 9, 11, 13, 15], [1.0, 2.178938712300417, 3.3596471719661047, 4.461505307256615, 5.577954938177401, 6.694404569098188, 7.810854200018974, 8.92730383093976], marker = '*', color = "#e629f0")
+    pplt.xlim(0, 15)
+    pplt.ylim(0, 15)
+    pplt.savefig("Small_Swaps/fig_MaxVAvg.png")
+    ########################################################################

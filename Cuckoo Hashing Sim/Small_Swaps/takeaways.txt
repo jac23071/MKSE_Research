@@ -1,0 +1,5 @@
+Takeaways:
+1.) Number of swaps does NOT change how much data gets sent to the Cache.
+2.) For both table size ratios, the initial resitriction (max = 1) resulted in a significantly smaller cache size than the other restrictions,
+    which were roughly equal and all greate than max = 1.
+3.) Higher table ratios result in smaller caches.
