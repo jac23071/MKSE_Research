@@ -1,5 +1,6 @@
 from hashlib import sha256
 from math import floor
+from random import randint
 import sys
 from time import time 
 
@@ -60,6 +61,18 @@ def place_data(data_dict, table, cache, max_swaps):
             while(table[new_loc] != float('-inf')):
                 if (num_swaps == max_swaps):
                     cache.append(swap_word)
+                    #start fake swaps:
+                    for i in range(num_swaps):
+                        rand_idx = randint(0, len(table) - 1)
+                        rand_word = table[rand_idx]
+                        for word in cache:
+                            if data_dict[word][0] == rand_idx and table[rand_idx] == float('-inf'):
+                                table[rand_idx] = word
+                                cache.remove(word)
+                            elif data_dict[word][1] == rand_idx and table[rand_idx] == float('-inf'):
+                                table[rand_idx] = word
+                                cache.remove(word)
+                                
                     highest_num_swaps = max_swaps
                     list_num_swaps.append(num_swaps)
                     break
@@ -80,6 +93,17 @@ def place_data(data_dict, table, cache, max_swaps):
 
             if (table[new_loc] == float('-inf')):
                 table[new_loc] = swap_word
+            
+            for i in range(100):
+                rand_idx = randint(0, len(table) - 1)
+                for word in cache:
+                    if data_dict[word][0] == rand_idx and table[rand_idx] == float('-inf'):
+                        table[rand_idx] = word
+                        cache.remove(word)
+                    elif data_dict[word][1] == rand_idx and table[rand_idx] == float('-inf'):
+                        table[rand_idx] = word
+                        cache.remove(word)
+
     end_time = time()
     total_time = end_time - start_time
 
@@ -105,7 +129,7 @@ def place_data(data_dict, table, cache, max_swaps):
 if __name__ == "__main__":
     #Important Vars
     scale = 1.8
-    max_swaps = 15
+    max_swaps = 5
     raw_data = sys.argv[1:]
     # raw_data = ["BIG", "SMALL", "HUGE", "TINY", "ENORMOUS", "MINISCULE"]
 
