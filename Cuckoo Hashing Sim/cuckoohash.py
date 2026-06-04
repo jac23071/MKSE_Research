@@ -37,6 +37,75 @@ def hash_data(data_list, table_size):
         data_dict[word] = hashing_alg(word, table_size)
     return data_dict
 
+def start_swapchain(data_dict, table, cache, max_swaps, init_word, highest_num_swaps, list_num_swaps):
+    loc = data_dict[init_word][0]
+    num_swaps = 0
+
+    if (table[loc] == float('-inf')):
+        table[loc] = init_word
+
+    else:
+        swap_word = table[loc]
+        table[loc] = init_word
+        new_loc = data_dict[swap_word][1]
+        num_swaps += 1
+
+        while(table[new_loc] != float('-inf')):
+            if (num_swaps == max_swaps):
+                cache.append(swap_word)
+                #start fake swaps:
+                for i in range(num_swaps):
+                    rand_idx = randint(0, len(table) - 1)
+                    # access memory and do nothing with it
+                    ######################################
+                    rand_word = table[rand_idx]
+                    rand_word += "nonsense"
+                    ######################################
+                    for cache_word in cache:
+                        if data_dict[cache_word][0] == rand_idx and table[rand_idx] == float('-inf'): #maybe remove after 'and'?
+                            table[rand_idx] = cache_word
+                            #TODO: start_swapchain here w/ cacheword?
+                            cache.remove(cache_word)
+                        elif data_dict[cache_word][1] == rand_idx and table[rand_idx] == float('-inf'): #maybe remove after 'and'?
+                            table[rand_idx] = cache_word
+                            #TODO: start_swapchain here w/ cacheword?
+                            cache.remove(cache_word)
+                            
+                highest_num_swaps = max_swaps
+                list_num_swaps.append(num_swaps)
+                break
+
+            else:
+                temp = table[new_loc]
+                table[new_loc] = swap_word
+                swap_word = temp
+                new_loc = data_dict[swap_word][1]
+                num_swaps += 1
+
+                if (table[new_loc] == float('-inf')):
+                    table[new_loc] = swap_word
+                    if (num_swaps > highest_num_swaps):
+                        highest_num_swaps = num_swaps
+                        break
+        list_num_swaps.append(num_swaps)
+
+        if (table[new_loc] == float('-inf')):
+            table[new_loc] = swap_word
+        
+        for i in range(100):
+            rand_idx = randint(0, len(table) - 1)
+            for cache_word in cache:
+                if data_dict[cache_word][0] == rand_idx and table[rand_idx] == float('-inf'): #maybe remove after 'and'?
+                    table[rand_idx] = cache_word
+                    cache.remove(cache_word)
+                    #TODO: start_swapchain here w/ cacheword?
+                elif data_dict[cache_word][1] == rand_idx and table[rand_idx] == float('-inf'): #maybe remove after 'and'?
+                    table[rand_idx] = cache_word
+                    cache.remove(cache_word)
+                    #TODO: start_swapchain here w/ cacheword?
+    
+    return highest_num_swaps
+
 def place_data(data_dict, table, cache, max_swaps):
     """Places data into their place in the array. Handles swaps and caching. Returns
     nothing, but prints time taken and maximum number of swaps. 
@@ -46,63 +115,7 @@ def place_data(data_dict, table, cache, max_swaps):
     list_num_swaps = []
 
     for word in data_dict:
-        loc = data_dict[word][0]
-        num_swaps = 0
-
-        if (table[loc] == float('-inf')):
-            table[loc] = word
-
-        else:
-            swap_word = table[loc]
-            table[loc] = word
-            new_loc = data_dict[swap_word][1]
-            num_swaps += 1
-
-            while(table[new_loc] != float('-inf')):
-                if (num_swaps == max_swaps):
-                    cache.append(swap_word)
-                    #start fake swaps:
-                    for i in range(num_swaps):
-                        rand_idx = randint(0, len(table) - 1)
-                        rand_word = table[rand_idx]
-                        for word in cache:
-                            if data_dict[word][0] == rand_idx and table[rand_idx] == float('-inf'):
-                                table[rand_idx] = word
-                                cache.remove(word)
-                            elif data_dict[word][1] == rand_idx and table[rand_idx] == float('-inf'):
-                                table[rand_idx] = word
-                                cache.remove(word)
-                                
-                    highest_num_swaps = max_swaps
-                    list_num_swaps.append(num_swaps)
-                    break
-
-                else:
-                    temp = table[new_loc]
-                    table[new_loc] = swap_word
-                    swap_word = temp
-                    new_loc = data_dict[swap_word][1]
-                    num_swaps += 1
-
-                    if (table[new_loc] == float('-inf')):
-                        table[new_loc] = swap_word
-                        if (num_swaps > highest_num_swaps):
-                            highest_num_swaps = num_swaps
-                            break
-            list_num_swaps.append(num_swaps)
-
-            if (table[new_loc] == float('-inf')):
-                table[new_loc] = swap_word
-            
-            for i in range(100):
-                rand_idx = randint(0, len(table) - 1)
-                for word in cache:
-                    if data_dict[word][0] == rand_idx and table[rand_idx] == float('-inf'):
-                        table[rand_idx] = word
-                        cache.remove(word)
-                    elif data_dict[word][1] == rand_idx and table[rand_idx] == float('-inf'):
-                        table[rand_idx] = word
-                        cache.remove(word)
+        highest_num_swaps = start_swapchain(data_dict, table, cache, max_swaps, word, highest_num_swaps, list_num_swaps)
 
     end_time = time()
     total_time = end_time - start_time

@@ -1,0 +1,9 @@
+It seems that RW for scanning the entire stash does lead to reduction in stash size
+Although the reduction seems trivial compared to th tradeoff for time complexity.
+perhaps bfs on the cache in pieces is more efficient?
+    -like the "sliding glass window idea"?
+    -if the scan moves faster than the stash grows, it could be computationally easier as time goes on(?)
+
+Test how many terms have already seen all possible positions (if position = 3)
+    -rough percentage: 65%, so then roughly 35% can be put back
+    -when we try swapping back with RW, percentage: 82% on average
