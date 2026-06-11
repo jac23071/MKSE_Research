@@ -207,6 +207,7 @@ def place_data_BFS(data_dict, table, cache, max_swaps):
                 path_layer -= 1
             #At layer 0 now, so just swap the word upward, finally
             table[final_idx] = word
+            #TODO: DIuble n triple check the math to ensure this works!
 
 
 if __name__ == "__main__":
