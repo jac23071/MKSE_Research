@@ -4,13 +4,16 @@ from random import randint
 import sys
 from time import time
 
+#Number of hashes each word has:
+NUM_HASHES = 4
+
 class word:
     def __init__(self, word):
         self.word = word
         self.placement = 0
         
     def inc(self):
-        if(self.placement != 3):
+        if(self.placement != NUM_HASHES - 1):
             self.placement += 1
     
     def get_loc(self):
@@ -57,7 +60,7 @@ def hash_data(data_list, table_size):
         data_dict[word] = hashing_alg(word, table_size)
     return data_dict
 
-def place_data(data_dict, table, cache, max_swaps):
+def place_data_RW(data_dict, table, cache, max_swaps):
     """Places data into their place in the array. Handles swaps and caching. Returns
     nothing, but prints time taken and maximum number of swaps. 
     """
@@ -95,7 +98,7 @@ def place_data(data_dict, table, cache, max_swaps):
                             print("If this prints, a catastrophic error has occured. Line 95.")
                         ######################################
                         for cache_word in cache:
-                            for idx in range(4):
+                            for idx in range(NUM_HASHES):
                                 if data_dict[cache_word.word][idx] == rand_idx and table[rand_idx] == float('-inf'):
                                     table[rand_idx] = cache_word
                                     cache.remove(cache_word)
@@ -121,23 +124,23 @@ def place_data(data_dict, table, cache, max_swaps):
             if (table[new_loc] == float('-inf')):
                 table[new_loc] = swap_word
             
-            for i in range(500):
+            for i in range(1000):
                 rand_idx = randint(0, len(table) - 1)
                 for cache_word in cache:
-                    for idx in range(4):
+                    for idx in range(NUM_HASHES):
                             if data_dict[cache_word.word][idx] == rand_idx and table[rand_idx] == float('-inf'):
                                 table[rand_idx] = cache_word
                                 cache.remove(cache_word)
 
-    #calc percentage in cache not-put-backable:
-    ############################################
-    num_npb = 0
-    for cached_word in cache:
-        if (cached_word.get_loc() == 3):
-            num_npb += 1
-    percent = float(num_npb)/float(len(cache))
-    print("Percent npbables: " + str(percent))
-    ############################################
+    # #calc percentage in cache not-put-backable:
+    # ############################################
+    # num_npb = 0
+    # for cached_word in cache:
+    #     if (cached_word.get_loc() == 3):
+    #         num_npb += 1
+    # percent = float(num_npb)/float(len(cache))
+    # print("Percent npbables: " + str(percent))
+    # ############################################
     
     avg = 0
     sum = 0
@@ -151,6 +154,60 @@ def place_data(data_dict, table, cache, max_swaps):
         outfile.write(str(len(cache)))
         outfile.write("\n")
         outfile.write(str(avg))
+
+def place_data_BFS(data_dict, table, cache, max_swaps):
+
+    for word in data_dict:
+        bfs_queue = []
+        path_layer = 1
+        path_ptr = -1
+        path_found = 0 # will flip to 1 if a space was found before termination
+
+        for possible_space in range(NUM_HASHES):
+            if(table[data_dict[word][possible_space]] == int('-inf')):
+                table[data_dict[word][possible_space]] = word
+                path_found = 1
+                break
+            else:
+                bfs_queue.append(data_dict[word][possible_space])
+        
+        final_idx = -1 # will be set to the idx of the empty space found in the bfs queue
+        while(path_layer != max_swaps and not path_found): # end when ptr reaches max depth
+            for seg_idx in range(1, pow(NUM_HASHES, path_layer) + 1): #traverse length of full segment
+                if (path_found):
+                    break
+                word_idx = bfs_queue[path_ptr + seg_idx]
+                tbl_word = table[word_idx]
+                for tbl_word_idx in range(NUM_HASHES):
+                    next_node_idx = data_dict[tbl_word][tbl_word_idx]
+                    bfs_queue.append(table[next_node_idx])
+                    if (table[next_node_idx] == int('-inf')):
+                        final_idx = path_ptr + pow(NUM_HASHES, path_layer + 1) + (NUM_HASHES * (seg_idx - 1)) + tbl_word_idx
+                        path_found = 1
+                        break
+            path_ptr += pow(NUM_HASHES, path_layer)
+            path_layer += 1
+        
+        if (not path_found): #Coudn't find empty space in 5 layers
+            cache.append(word)
+            continue
+        else: #empty Space found, location at final_idx
+            #if a space is found, we need to swap previous nodes upwards, only stopping when -
+            #-the previous layer == 0
+            while(path_layer != 0):
+                prev_ptr = path_ptr - pow(NUM_HASHES, path_layer)
+                dist = final_idx - path_ptr
+                prev_node = prev_ptr + (dist + (NUM_HASHES - (dist % NUM_HASHES)))/NUM_HASHES if dist % NUM_HASHES != 0 else prev_ptr + dist/NUM_HASHES
+                #Now swap forwards:
+                table[final_idx] = table[prev_node]
+                table[prev_node] = int('-inf')
+                #Now move backwards in BFS path:
+                final_idx = prev_node
+                path_ptr = prev_ptr
+                path_layer -= 1
+            #At layer 0 now, so just swap the word upward, finally
+            table[final_idx] = word
+
 
 if __name__ == "__main__":
     #Important Vars

@@ -1,5 +1,6 @@
 import matplotlib.pyplot as pplt
 import subprocess
+import csv
 
 def run_test(test_data):
     args = ["python3", "MKSE_Research/Cuckoo Hashing Sim/ckhash_revamp.py"]
@@ -88,6 +89,13 @@ if (__name__ == "__main__"):
     # pplt.ylim(0, 2000)
     # pplt.savefig("MKSE_Research/Cuckoo Hashing Sim/Cache Reduction/cache_red_noRW.png")
     # ########################################################################
+
+    # # Save Cache size results to csv
+    # ###################################################
+    # with open("MKSE_Research/Cuckoo Hashing Sim/Cache Reduction/cachesize.csv", "a+") as file:
+    #     writer = csv.writer(file)
+    #     writer.writerow(cache_sizes)
+    # ###################################################
     
     # #Add avgs to file:
     # #########################################################################
