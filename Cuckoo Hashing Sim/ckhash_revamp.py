@@ -146,7 +146,7 @@ def place_data_RW(data_dict, table, cache, max_swaps):
     sum = 0
     for i in range(len(list_num_swaps)):
         sum += list_num_swaps[i]
-        avg = float(sum)/float((len(list_num_swaps)))
+    avg = float(sum)/float((len(data_dict)))
 
     with open("MKSE_Research/Cuckoo Hashing Sim/result_file.txt", "w+") as outfile:
         outfile.write(str(len(data_dict) - len(cache)))
@@ -158,21 +158,33 @@ def place_data_RW(data_dict, table, cache, max_swaps):
 def place_data_BFS(data_dict, table, cache, max_swaps):
 
     for word in data_dict:
+        # if(word == 'recovery'):
+        #     print("and hereeee we gooooo")
+            
+        highest_num_swaps = 0
+        list_num_swaps = []
+
         bfs_queue = []
         path_layer = 1
         path_ptr = -1
         path_found = 0 # will flip to 1 if a space was found before termination
 
+        # if (word == "cities"):
+            # print("Stop point here:")
+            # print(data_dict[word][0])
+
+        found_in_layer1 = 0 # will be set to true iff the space was found in layer one
         for possible_space in range(NUM_HASHES):
-            if(table[data_dict[word][possible_space]] == int('-inf')):
+            if(table[data_dict[word][possible_space]] == float('-inf')):
                 table[data_dict[word][possible_space]] = word
                 path_found = 1
+                found_in_layer1 = 1
                 break
             else:
                 bfs_queue.append(data_dict[word][possible_space])
         
         final_idx = -1 # will be set to the idx of the empty space found in the bfs queue
-        while(path_layer != max_swaps and not path_found): # end when ptr reaches max depth
+        while(path_layer != max_swaps and not path_found and not found_in_layer1): # end when ptr reaches max depth
             for seg_idx in range(1, pow(NUM_HASHES, path_layer) + 1): #traverse length of full segment
                 if (path_found):
                     break
@@ -180,39 +192,93 @@ def place_data_BFS(data_dict, table, cache, max_swaps):
                 tbl_word = table[word_idx]
                 for tbl_word_idx in range(NUM_HASHES):
                     next_node_idx = data_dict[tbl_word][tbl_word_idx]
-                    bfs_queue.append(table[next_node_idx])
-                    if (table[next_node_idx] == int('-inf')):
-                        final_idx = path_ptr + pow(NUM_HASHES, path_layer + 1) + (NUM_HASHES * (seg_idx - 1)) + tbl_word_idx
+                    bfs_queue.append(next_node_idx)
+                    if (table[next_node_idx] == float('-inf')):
+                        final_idx = path_ptr + pow(NUM_HASHES, path_layer) + (NUM_HASHES * (seg_idx - 1)) + tbl_word_idx + 1
                         path_found = 1
                         break
             path_ptr += pow(NUM_HASHES, path_layer)
-            path_layer += 1
+            if (not path_found):
+                path_layer += 1
         
         if (not path_found): #Coudn't find empty space in 5 layers
             cache.append(word)
             continue
-        else: #empty Space found, location at final_idx
+        elif (not found_in_layer1): #empty Space found, location at final_idx
             #if a space is found, we need to swap previous nodes upwards, only stopping when -
             #-the previous layer == 0
+
+            if (path_layer > highest_num_swaps):
+                highest_num_swaps = path_layer
+            list_num_swaps.append(path_layer + 1)
+
             while(path_layer != 0):
                 prev_ptr = path_ptr - pow(NUM_HASHES, path_layer)
                 dist = final_idx - path_ptr
-                prev_node = prev_ptr + (dist + (NUM_HASHES - (dist % NUM_HASHES)))/NUM_HASHES if dist % NUM_HASHES != 0 else prev_ptr + dist/NUM_HASHES
+                prev_node = prev_ptr + (dist + (NUM_HASHES - (dist % NUM_HASHES)))//NUM_HASHES if dist % NUM_HASHES != 0 else prev_ptr + dist//NUM_HASHES
                 #Now swap forwards:
-                table[final_idx] = table[prev_node]
-                table[prev_node] = int('-inf')
+                # if (table[prev_node] == 'build'):
+                    # print("Pause here to examine behaviour")
+                # if (bfs_queue[final_idx] < 0 or bfs_queue[final_idx] > 4500):
+                #     print("Here we go again")
+                table[bfs_queue[final_idx]] = table[bfs_queue[prev_node]]
+                table[bfs_queue[prev_node]] = float('-inf')
                 #Now move backwards in BFS path:
                 final_idx = prev_node
                 path_ptr = prev_ptr
                 path_layer -= 1
             #At layer 0 now, so just swap the word upward, finally
-            table[final_idx] = word
-            #TODO: DIuble n triple check the math to ensure this works!
+            table[bfs_queue[final_idx]] = word
+            #TODO: Double n triple check the math to ensure this works!
+        else:
+            continue
+    
+    avg = 0
+    sum = 0
+    for i in range(len(list_num_swaps)):
+        sum += list_num_swaps[i]
+    avg = float(sum)/float((len(data_dict)))
 
+    with open("MKSE_Research/Cuckoo Hashing Sim/result_file.txt", "w+") as outfile:
+        outfile.write(str(len(data_dict) - len(cache)))
+        outfile.write("\n")
+        outfile.write(str(len(cache)))
+        outfile.write("\n")
+        outfile.write(str(avg))
+    
+    print("Table:")
+    print(table)
+    print("Stash:")
+    print(cache)
+
+def check_correct(data_dict, table):
+    # seen = set()
+    for word in data_dict:
+        # if (word in seen):
+        #     print(word + " appears multiple times!")
+        # else:
+        #     seen.add(word)
+        
+        found = 0
+        for idx in range(NUM_HASHES):
+            tbl_idx = data_dict[word][idx]
+            if (word == table[tbl_idx]):
+                found = 1
+                break
+            elif word in cache:
+                found = 1
+                break
+        
+        if (not found):
+            print(word + " not found!")
+    
+    # #check table scale:
+    # scale_check = len(table)/len(data_dict)
+    # print(scale_check)
 
 if __name__ == "__main__":
     #Important Vars
-    scale = 1.8
+    scale = 1.00
     max_swaps = 5
     raw_data = sys.argv[1:]
     # raw_data = ["BIG", "SMALL", "HUGE", "TINY", "ENORMOUS", "MINISCULE"]
@@ -223,4 +289,12 @@ if __name__ == "__main__":
 
     init_table(table, table_size)
     data_dict = hash_data(raw_data, table_size)
-    place_data(data_dict, table, cache, max_swaps)
+    place_data_BFS(data_dict, table, cache, max_swaps)
+    check_correct(data_dict, table)
+    print("Data dict len: " + str(len(data_dict)))
+    # for idx in range(len(table)):
+    #     if (table[idx] == 'business'):
+    #         print("##################################")
+    #         print("Alert! line 280! idx: " + str(idx))
+    # print(data_dict['cities'])
+    # print(data_dict['very'])
