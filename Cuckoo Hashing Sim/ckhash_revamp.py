@@ -60,9 +60,22 @@ def hash_data(data_list, table_size):
         data_dict[word] = hashing_alg(word, table_size)
     return data_dict
 
+def create_rand_set(size, tbl_len):
+    """Creates a set of a 'size' unique indices for a table of 'tbl_len'"""
+    if (size > tbl_len):
+        size = tbl_len
+
+    rand_set = set()
+    for num_terms in range(size):
+        new_int = randint(0, tbl_len - 1)
+        while(new_int in rand_set):
+            new_int = randint(0, tbl_len - 1)
+        rand_set.add(new_int)
+    return rand_set
+
 def place_data_RW(data_dict, table, cache, max_swaps):
-    """Places data into their place in the array. Handles swaps and caching. Returns
-    nothing, but prints time taken and maximum number of swaps. 
+    """Places data into their place in the array via Random Walk. Handles swaps
+    and stashing.
     """
     highest_num_swaps = 0
     list_num_swaps = []
@@ -156,15 +169,18 @@ def place_data_RW(data_dict, table, cache, max_swaps):
         outfile.write(str(avg))
 
 def place_data_BFS(data_dict, table, cache, max_swaps):
+    """Places data into their place in the array via Breadth First Search. Handles swaps
+    and stashing. 
+    """
+    highest_num_swaps = 0
+    list_num_swaps = []
 
     for word in data_dict:
         # if(word == 'recovery'):
         #     print("and hereeee we gooooo")
-            
-        highest_num_swaps = 0
-        list_num_swaps = []
 
         bfs_queue = []
+        loc_dict = dict()
         path_layer = 1
         path_ptr = -1
         path_found = 0 # will flip to 1 if a space was found before termination
@@ -203,6 +219,13 @@ def place_data_BFS(data_dict, table, cache, max_swaps):
         
         if (not path_found): #Coudn't find empty space in 5 layers
             cache.append(word)
+            # Add the possible locs for said term
+            for word_idx in range(NUM_HASHES):
+                if(data_dict[word][word_idx] in loc_dict):
+                    loc_dict[data_dict[word][word_idx]].append(word)
+                else:
+                    loc_dict[data_dict[word][word_idx]] = []
+                    loc_dict[data_dict[word][word_idx]].append(word)
             continue
         elif (not found_in_layer1): #empty Space found, location at final_idx
             #if a space is found, we need to swap previous nodes upwards, only stopping when -
@@ -229,7 +252,21 @@ def place_data_BFS(data_dict, table, cache, max_swaps):
                 path_layer -= 1
             #At layer 0 now, so just swap the word upward, finally
             table[bfs_queue[final_idx]] = word
-            #TODO: Double n triple check the math to ensure this works!
+            #Now look @ random indices to look for reintroduceable key terms
+            rand_idx_set = create_rand_set(1000, len(table)) #set 1
+            loc_set = set() # set 2
+            for loc in loc_dict:
+                set.add(loc)
+            selected_idx_set = rand_idx_set & loc_set
+            for idx in selected_idx_set:
+                if (table[idx] == float("-inf")):
+                    stash_word = loc_dict[idx][-1]
+                    for possibility in data_dict[stash_word]:
+                        if possibility in loc_dict:
+                            loc_dict[possibility].remove(stash_word)
+                        if (not loc_dict[possibility]): #if array is now empty
+                            loc_dict.pop(possibility)
+                    table[idx] = stash_word
         else:
             continue
     
@@ -246,10 +283,10 @@ def place_data_BFS(data_dict, table, cache, max_swaps):
         outfile.write("\n")
         outfile.write(str(avg))
     
-    print("Table:")
-    print(table)
-    print("Stash:")
-    print(cache)
+    # print("Table:")
+    # print(table)
+    # print("Stash:")
+    # print(cache)
 
 def check_correct(data_dict, table):
     # seen = set()
@@ -291,7 +328,7 @@ if __name__ == "__main__":
     data_dict = hash_data(raw_data, table_size)
     place_data_BFS(data_dict, table, cache, max_swaps)
     check_correct(data_dict, table)
-    print("Data dict len: " + str(len(data_dict)))
+    # print("Data dict len: " + str(len(data_dict)))
     # for idx in range(len(table)):
     #     if (table[idx] == 'business'):
     #         print("##################################")
