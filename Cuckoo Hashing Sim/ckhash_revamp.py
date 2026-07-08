@@ -21,6 +21,12 @@ class word:
     
     def __str__(self):
         return self.word
+    
+    def __eq__(self, other):
+        if(isinstance(other, word)):
+            return self.word == other.word
+        elif(isinstance(other, float)):
+            return False
 
 def init_table(table, table_size):
     """Initializes a table with all -inf vals to signify empty space. Returns nothing."""
@@ -73,77 +79,135 @@ def create_rand_set(size, tbl_len):
         rand_set.add(new_int)
     return rand_set
 
+def start_swapchain(data_dict, table, cache, max_swaps, init_wrd, highest_num_swaps, list_num_swaps, loc_dict):
+    loc = data_dict[init_wrd.word][init_wrd.placement]
+    num_swaps = 0
+
+    #First pick is empty:
+    if (table[loc] == float('-inf')):
+        table[loc] = init_wrd
+    
+    #First isn't empty:
+    #If not empty, there must already be a word object there
+    else:
+        swap_word = table[loc]
+        table[loc] = init_wrd
+        swap_word.inc()
+        new_loc = data_dict[swap_word.word][swap_word.get_loc()]
+        num_swaps += 1 
+        
+        while(table[new_loc] != float('-inf')):
+            if(num_swaps == max_swaps):
+                cache.append(swap_word)
+                #put swap_word in loc_dict
+                for possibility in data_dict[swap_word.word]:
+                    if (possibility in loc_dict):
+                        loc_dict[possibility].append(swap_word)
+                    else:
+                        loc_dict[possibility] = []
+                        loc_dict[possibility].append(swap_word)
+                        
+                # start fake swaps:
+                rand_set = create_rand_set(10, len(table))
+                loc_set = set()
+                for loc in loc_dict:
+                    loc_set.add(loc)
+                selected_set = rand_set & loc_set
+                for rand_idx in rand_set:
+                    # access memory and do nothing with it
+                    ######################################
+                    rand_word = table[rand_idx]
+                    if (rand_word == float('inf')): #never true
+                        print("If this prints, a catastrophic error has occured. Line 104.")
+                    ######################################
+                    # if (rand_idx in selected_set):
+                    #     stash_word = loc_dict[rand_idx][-1]
+                    #     for data_idx in range(4):
+                    #         if (data_dict[stash_word][data_idx] == rand_idx):
+                    #             break
+                    #         # update stash_word's pos to be data_idx
+                    #         stash_word.placement = data_idx
+                    #     #remove word obj from stash and from all loc_dict locs before starting new swapchain
+                    #     cache.remove(stash_word)
+                    #     for possibility in data_dict[stash_word]:
+                    #         loc_dict[possibility].remove(stash_word)
+                    #         if (not loc_dict[possibility]):
+                    #             loc_dict.remove(possibility)
+                    #     #begin new swapchain
+                    #     start_swapchain(data_dict, table, cache, max_swaps, stash_word, highest_num_swaps, list_num_swaps, loc_dict)
+
+                # for i in range(num_swaps):
+                #     rand_idx = randint(0, len(table) - 1)
+                #     # access memory and do nothing with it
+                #     ######################################
+                #     rand_word = table[rand_idx]
+                #     if (rand_word == float('inf')): #never true
+                #         print("If this prints, a catastrophic error has occured. Line 95.")
+                #     ######################################
+                #     for cache_word in cache:
+                #         for idx in range(NUM_HASHES):
+                #             if data_dict[cache_word.word][idx] == rand_idx and table[rand_idx] == float('-inf'):
+                #                 table[rand_idx] = cache_word
+                #                 cache.remove(cache_word)
+                highest_num_swaps = max_swaps
+                list_num_swaps.append(num_swaps)
+                break
+
+            else:
+                temp = table[new_loc]
+                table[new_loc] = swap_word
+                swap_word = temp
+                swap_word.inc()
+                new_loc = data_dict[swap_word.word][swap_word.get_loc()]
+                num_swaps += 1
+
+                if (table[new_loc] == float('-inf')):
+                    table[new_loc] = swap_word
+                    if (num_swaps > highest_num_swaps):
+                        highest_num_swaps = num_swaps
+                        break
+        list_num_swaps.append(num_swaps)
+
+        if (table[new_loc] == float('-inf')):
+            table[new_loc] = swap_word
+
 def place_data_RW(data_dict, table, cache, max_swaps):
     """Places data into their place in the array via Random Walk. Handles swaps
     and stashing.
     """
     highest_num_swaps = 0
     list_num_swaps = []
+    loc_dict = dict()
 
     for term in data_dict:
         wrd = word(term)
-        loc = data_dict[term][0]
-        num_swaps = 0
+        start_swapchain(data_dict, table, cache, max_swaps, wrd, highest_num_swaps, list_num_swaps, loc_dict)
+        #Rand selections for swapchains
+        rand_set = create_rand_set(10, len(table))
+        loc_set = set()
+        for loc in loc_dict:
+            loc_set.add(loc)
+        select_set = loc_set & rand_set
 
-        #First pick is empty:
-        if (table[loc] == float('-inf')):
-            table[loc] = wrd
-        
-        #First isn't empty:
-        #If not empty, there must already be a word object there
-        else:
-            swap_word = table[loc]
-            table[loc] = wrd
-            swap_word.inc()
-            new_loc = data_dict[swap_word.word][swap_word.get_loc()]
-            num_swaps += 1 
-            
-            while(table[new_loc] != float('-inf')):
-                if(num_swaps == max_swaps):
-                    cache.append(swap_word)
-                    # start fake swaps:
-                    for i in range(num_swaps):
-                        rand_idx = randint(0, len(table) - 1)
-                        # access memory and do nothing with it
-                        ######################################
-                        rand_word = table[rand_idx]
-                        if (rand_word == float('inf')): #never true
-                            print("If this prints, a catastrophic error has occured. Line 95.")
-                        ######################################
-                        for cache_word in cache:
-                            for idx in range(NUM_HASHES):
-                                if data_dict[cache_word.word][idx] == rand_idx and table[rand_idx] == float('-inf'):
-                                    table[rand_idx] = cache_word
-                                    cache.remove(cache_word)
-                    highest_num_swaps = max_swaps
-                    list_num_swaps.append(num_swaps)
+        for s_idx in select_set:
+            if (s_idx not in loc_dict):
+                break
+
+            stash_word = loc_dict[s_idx][-1]
+            for data_idx in range(4):
+                if (data_dict[stash_word.word][data_idx] == s_idx):
                     break
+                # update stash_word's pos to be data_idx
+                stash_word.placement = data_idx
+            #remove word obj from stash and from all loc_dict locs before starting new swapchain
+            cache.remove(stash_word)
+            for possibility in data_dict[stash_word.word]:
+                loc_dict[possibility].remove(stash_word)
+                if (not loc_dict[possibility]):
+                    loc_dict.pop(possibility)
+            #begin new swapchain
+            start_swapchain(data_dict, table, cache, max_swaps, stash_word, highest_num_swaps, list_num_swaps, loc_dict)
 
-                else:
-                    temp = table[new_loc]
-                    table[new_loc] = swap_word
-                    swap_word = temp
-                    swap_word.inc()
-                    new_loc = data_dict[swap_word.word][swap_word.get_loc()]
-                    num_swaps += 1
-
-                    if (table[new_loc] == float('-inf')):
-                        table[new_loc] = swap_word
-                        if (num_swaps > highest_num_swaps):
-                            highest_num_swaps = num_swaps
-                            break
-            list_num_swaps.append(num_swaps)
-
-            if (table[new_loc] == float('-inf')):
-                table[new_loc] = swap_word
-            
-            for i in range(1000):
-                rand_idx = randint(0, len(table) - 1)
-                for cache_word in cache:
-                    for idx in range(NUM_HASHES):
-                            if data_dict[cache_word.word][idx] == rand_idx and table[rand_idx] == float('-inf'):
-                                table[rand_idx] = cache_word
-                                cache.remove(cache_word)
 
     # #calc percentage in cache not-put-backable:
     # ############################################
@@ -161,7 +225,7 @@ def place_data_RW(data_dict, table, cache, max_swaps):
         sum += list_num_swaps[i]
     avg = float(sum)/float((len(data_dict)))
 
-    with open("MKSE_Research/Cuckoo Hashing Sim/result_file.txt", "w+") as outfile:
+    with open(".\\Cuckoo Hashing Sim\\result_file.txt", "w+") as outfile:
         outfile.write(str(len(data_dict) - len(cache)))
         outfile.write("\n")
         outfile.write(str(len(cache)))
@@ -276,7 +340,7 @@ def place_data_BFS(data_dict, table, cache, max_swaps):
         sum += list_num_swaps[i]
     avg = float(sum)/float((len(data_dict)))
 
-    with open("MKSE_Research/Cuckoo Hashing Sim/result_file.txt", "w+") as outfile:
+    with open(".\\Cuckoo Hashing Sim\\result_file.txt", "w+") as outfile:
         outfile.write(str(len(data_dict) - len(cache)))
         outfile.write("\n")
         outfile.write(str(len(cache)))
@@ -288,7 +352,7 @@ def place_data_BFS(data_dict, table, cache, max_swaps):
     # print("Stash:")
     # print(cache)
 
-def check_correct(data_dict, table):
+def check_correct_BFS(data_dict, table):
     # seen = set()
     for word in data_dict:
         # if (word in seen):
@@ -313,6 +377,27 @@ def check_correct(data_dict, table):
     # scale_check = len(table)/len(data_dict)
     # print(scale_check)
 
+def check_correct_RW(data_dict, table):
+    # seen = set()
+    for term in data_dict:
+        wrd = word(term)
+        found = 0
+        for idx in range(NUM_HASHES):
+            tbl_idx = data_dict[wrd.word][idx]
+            if (wrd == table[tbl_idx]):
+                found = 1
+                break
+            elif wrd in cache:
+                found = 1
+                break
+        
+        if (not found):
+            print(wrd.word + " not found!")
+    
+    # #check table scale:
+    # scale_check = len(table)/len(data_dict)
+    # print(scale_check)
+
 if __name__ == "__main__":
     #Important Vars
     scale = 1.00
@@ -326,8 +411,10 @@ if __name__ == "__main__":
 
     init_table(table, table_size)
     data_dict = hash_data(raw_data, table_size)
-    place_data_BFS(data_dict, table, cache, max_swaps)
-    check_correct(data_dict, table)
+    place_data_RW(data_dict, table, cache, max_swaps)
+    # print(table)
+    # print(cache)
+    check_correct_RW(data_dict, table)
     # print("Data dict len: " + str(len(data_dict)))
     # for idx in range(len(table)):
     #     if (table[idx] == 'business'):
