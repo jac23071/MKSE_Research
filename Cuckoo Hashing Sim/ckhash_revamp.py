@@ -243,7 +243,7 @@ def update_sim(table, cache, data_dict, loc_dict):
                 loc_dict[possibility].append(upd_word)
         grabbed_terms += 1
     
-    #Now n duplicate terms are in loc_dict and the cache
+    #Now NUM_UPD_TERMS duplicate terms are in loc_dict and the cache
     #Now make a selection of random points
     NUM_RAND_PTS = 1000
     rand_set = create_rand_set(NUM_RAND_PTS, len(table))
