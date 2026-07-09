@@ -136,19 +136,6 @@ def start_swapchain(data_dict, table, cache, max_swaps, init_wrd, highest_num_sw
                     #     #begin new swapchain
                     #     start_swapchain(data_dict, table, cache, max_swaps, stash_word, highest_num_swaps, list_num_swaps, loc_dict)
 
-                # for i in range(num_swaps):
-                #     rand_idx = randint(0, len(table) - 1)
-                #     # access memory and do nothing with it
-                #     ######################################
-                #     rand_word = table[rand_idx]
-                #     if (rand_word == float('inf')): #never true
-                #         print("If this prints, a catastrophic error has occured. Line 95.")
-                #     ######################################
-                #     for cache_word in cache:
-                #         for idx in range(NUM_HASHES):
-                #             if data_dict[cache_word.word][idx] == rand_idx and table[rand_idx] == float('-inf'):
-                #                 table[rand_idx] = cache_word
-                #                 cache.remove(cache_word)
                 highest_num_swaps = max_swaps
                 list_num_swaps.append(num_swaps)
                 break
@@ -182,31 +169,31 @@ def place_data_RW(data_dict, table, cache, max_swaps):
     for term in data_dict:
         wrd = word(term)
         start_swapchain(data_dict, table, cache, max_swaps, wrd, highest_num_swaps, list_num_swaps, loc_dict)
-        #Rand selections for swapchains
-        rand_set = create_rand_set(10, len(table))
-        loc_set = set()
-        for loc in loc_dict:
-            loc_set.add(loc)
-        select_set = loc_set & rand_set
+        # #Rand selections for swapchains
+        # rand_set = create_rand_set(10, len(table))
+        # loc_set = set()
+        # for loc in loc_dict:
+        #     loc_set.add(loc)
+        # select_set = loc_set & rand_set
 
-        for s_idx in select_set:
-            if (s_idx not in loc_dict):
-                break
+        # for s_idx in select_set:
+        #     if (s_idx not in loc_dict):
+        #         break
 
-            stash_word = loc_dict[s_idx][-1]
-            for data_idx in range(4):
-                if (data_dict[stash_word.word][data_idx] == s_idx):
-                    break
-                # update stash_word's pos to be data_idx
-                stash_word.placement = data_idx
-            #remove word obj from stash and from all loc_dict locs before starting new swapchain
-            cache.remove(stash_word)
-            for possibility in data_dict[stash_word.word]:
-                loc_dict[possibility].remove(stash_word)
-                if (not loc_dict[possibility]):
-                    loc_dict.pop(possibility)
-            #begin new swapchain
-            start_swapchain(data_dict, table, cache, max_swaps, stash_word, highest_num_swaps, list_num_swaps, loc_dict)
+        #     stash_word = loc_dict[s_idx][-1]
+        #     for data_idx in range(4):
+        #         if (data_dict[stash_word.word][data_idx] == s_idx):
+        #             break
+        #         # update stash_word's pos to be data_idx
+        #         stash_word.placement = data_idx
+        #     #remove word obj from stash and from all loc_dict locs before starting new swapchain
+        #     cache.remove(stash_word)
+        #     for possibility in data_dict[stash_word.word]:
+        #         loc_dict[possibility].remove(stash_word)
+        #         if (not loc_dict[possibility]):
+        #             loc_dict.pop(possibility)
+        #     #begin new swapchain
+        #     start_swapchain(data_dict, table, cache, max_swaps, stash_word, highest_num_swaps, list_num_swaps, loc_dict)
 
 
     # #calc percentage in cache not-put-backable:
@@ -225,12 +212,57 @@ def place_data_RW(data_dict, table, cache, max_swaps):
         sum += list_num_swaps[i]
     avg = float(sum)/float((len(data_dict)))
 
-    with open(".\\Cuckoo Hashing Sim\\result_file.txt", "w+") as outfile:
+    with open("MKSE_Research/Cuckoo Hashing Sim/result_file.txt", "w+") as outfile:
         outfile.write(str(len(data_dict) - len(cache)))
         outfile.write("\n")
         outfile.write(str(len(cache)))
         outfile.write("\n")
         outfile.write(str(avg))
+    
+    return loc_dict
+
+def update_sim(table, cache, data_dict, loc_dict):
+    NUM_UPD_TERMS = 150
+
+    #loop thru data_dict and get NU_Terms
+    grabbed_terms = 0
+    for key in data_dict:
+        if (grabbed_terms == NUM_UPD_TERMS): #if we have all needed terms, stop
+            break
+        upd_word = word(key)
+        if upd_word in cache: #if the updword is already a cached term, continue
+            continue
+
+        #append cache word to cache and to loc_dict
+        cache.append(upd_word)
+        for possibility in data_dict[key]:
+            if (possibility in loc_dict):
+                loc_dict[possibility].append(upd_word)
+            else:
+                loc_dict[possibility] = []
+                loc_dict[possibility].append(upd_word)
+        grabbed_terms += 1
+    
+    #Now n duplicate terms are in loc_dict and the cache
+    #Now make a selection of random points
+    NUM_RAND_PTS = 1000
+    rand_set = create_rand_set(NUM_RAND_PTS, len(table))
+    loc_set = set()
+    for loc in loc_dict:
+        loc_set.add(loc)
+    select_set = loc_set & rand_set
+    
+    num_merges = 0
+    for s_idx in select_set:
+        for stash_word in loc_dict[s_idx]:
+            if (stash_word == table[s_idx]):
+                num_merges += 1
+    
+    with open("MKSE_Research/Cuckoo Hashing Sim/Update_Sim/merge_NUT_150_R_1000.txt", "a+") as outfile:
+        success_percentage = num_merges/NUM_UPD_TERMS
+        outfile.write(str(success_percentage) + ", ")
+        if(len(data_dict) > 9000):
+            outfile.write("\n")
 
 def place_data_BFS(data_dict, table, cache, max_swaps):
     """Places data into their place in the array via Breadth First Search. Handles swaps
@@ -248,10 +280,6 @@ def place_data_BFS(data_dict, table, cache, max_swaps):
         path_layer = 1
         path_ptr = -1
         path_found = 0 # will flip to 1 if a space was found before termination
-
-        # if (word == "cities"):
-            # print("Stop point here:")
-            # print(data_dict[word][0])
 
         found_in_layer1 = 0 # will be set to true iff the space was found in layer one
         for possible_space in range(NUM_HASHES):
@@ -304,10 +332,6 @@ def place_data_BFS(data_dict, table, cache, max_swaps):
                 dist = final_idx - path_ptr
                 prev_node = prev_ptr + (dist + (NUM_HASHES - (dist % NUM_HASHES)))//NUM_HASHES if dist % NUM_HASHES != 0 else prev_ptr + dist//NUM_HASHES
                 #Now swap forwards:
-                # if (table[prev_node] == 'build'):
-                    # print("Pause here to examine behaviour")
-                # if (bfs_queue[final_idx] < 0 or bfs_queue[final_idx] > 4500):
-                #     print("Here we go again")
                 table[bfs_queue[final_idx]] = table[bfs_queue[prev_node]]
                 table[bfs_queue[prev_node]] = float('-inf')
                 #Now move backwards in BFS path:
@@ -340,26 +364,17 @@ def place_data_BFS(data_dict, table, cache, max_swaps):
         sum += list_num_swaps[i]
     avg = float(sum)/float((len(data_dict)))
 
-    with open(".\\Cuckoo Hashing Sim\\result_file.txt", "w+") as outfile:
+    with open("MKSE_Research/Cuckoo Hashing Sim/result_file.txt", "w+") as outfile:
         outfile.write(str(len(data_dict) - len(cache)))
         outfile.write("\n")
         outfile.write(str(len(cache)))
         outfile.write("\n")
         outfile.write(str(avg))
     
-    # print("Table:")
-    # print(table)
-    # print("Stash:")
-    # print(cache)
 
 def check_correct_BFS(data_dict, table):
     # seen = set()
     for word in data_dict:
-        # if (word in seen):
-        #     print(word + " appears multiple times!")
-        # else:
-        #     seen.add(word)
-        
         found = 0
         for idx in range(NUM_HASHES):
             tbl_idx = data_dict[word][idx]
@@ -400,7 +415,7 @@ def check_correct_RW(data_dict, table):
 
 if __name__ == "__main__":
     #Important Vars
-    scale = 1.00
+    scale = 1.8
     max_swaps = 5
     raw_data = sys.argv[1:]
     # raw_data = ["BIG", "SMALL", "HUGE", "TINY", "ENORMOUS", "MINISCULE"]
@@ -411,14 +426,9 @@ if __name__ == "__main__":
 
     init_table(table, table_size)
     data_dict = hash_data(raw_data, table_size)
-    place_data_RW(data_dict, table, cache, max_swaps)
+    loc_dict = place_data_RW(data_dict, table, cache, max_swaps)
+    update_sim(table, cache, data_dict, loc_dict)
     # print(table)
     # print(cache)
     check_correct_RW(data_dict, table)
     # print("Data dict len: " + str(len(data_dict)))
-    # for idx in range(len(table)):
-    #     if (table[idx] == 'business'):
-    #         print("##################################")
-    #         print("Alert! line 280! idx: " + str(idx))
-    # print(data_dict['cities'])
-    # print(data_dict['very'])

@@ -3,14 +3,14 @@ import subprocess
 import csv
 
 def run_test(test_data):
-    args = ["python3", ".\\Cuckoo Hashing Sim\\ckhash_revamp.py"]
+    args = ["python3", "MKSE_Research/Cuckoo Hashing Sim/ckhash_revamp.py"]
     # args = ["python3", "ckhash_revamp.py"]
     args += test_data
     
     subprocess.run(args=args)
 
     output = []
-    with open(".\\Cuckoo Hashing Sim\\result_file.txt", 'r') as outfile:
+    with open("MKSE_Research/Cuckoo Hashing Sim/result_file.txt", 'r') as outfile:
     # with open("result_file.txt", 'r') as outfile:
         output = [line.rstrip() for line in outfile]
 
@@ -24,7 +24,7 @@ def run_test(test_data):
 if (__name__ == "__main__"):
     test_data = []
     # with open("google-10000-english-usa.txt") as data_file:
-    with open(".\\Cuckoo Hashing Sim\\google-10000-english-usa.txt") as data_file:
+    with open("MKSE_Research/Cuckoo Hashing Sim/google-10000-english-usa.txt") as data_file:
         test_data = [line.rstrip() for line in data_file]
     
     trial_10 = run_test(test_data[:10])
@@ -34,23 +34,23 @@ if (__name__ == "__main__"):
     trial_1250 = run_test(test_data[:1250])
     trial_2500 = run_test(test_data[:2500])
     trial_3750 = run_test(test_data[:3750])
-    # trial_5000 = run_test(test_data[:5000])
-    # trial_6250 = run_test(test_data[:6250])
-    # trial_7500 = run_test(test_data[:7500])
-    # trial_8750 = run_test(test_data[:8750])
-    # trial_10000 = run_test(test_data)
+    trial_5000 = run_test(test_data[:5000])
+    trial_6250 = run_test(test_data[:6250])
+    trial_7500 = run_test(test_data[:7500])
+    trial_8750 = run_test(test_data[:8750])
+    trial_10000 = run_test(test_data)
 
-    # trial_results = [trial_10, trial_100, trial_500, trial_1000, trial_1250, trial_2500, trial_3750, trial_5000, trial_6250, trial_7500, trial_8750, trial_10000]
+    trial_results = [trial_10, trial_100, trial_500, trial_1000, trial_1250, trial_2500, trial_3750, trial_5000, trial_6250, trial_7500, trial_8750, trial_10000]
 
-    # list_sizes = [10, 100, 500, 1000, 1250, 2500, 3750, 5000, 6250, 7500, 8750, 10000]
-    # table_sizes = []
-    # cache_sizes = []
-    # avg_num_swaps = []
+    list_sizes = [10, 100, 500, 1000, 1250, 2500, 3750, 5000, 6250, 7500, 8750, 10000]
+    table_sizes = []
+    cache_sizes = []
+    avg_num_swaps = []
 
-    # for i in range(len(list_sizes)):
-    #     table_sizes.append(trial_results[i][0])
-    #     cache_sizes.append(trial_results[i][1])
-    #     avg_num_swaps.append(trial_results[i][2])
+    for i in range(len(list_sizes)):
+        table_sizes.append(trial_results[i][0])
+        cache_sizes.append(trial_results[i][1])
+        avg_num_swaps.append(trial_results[i][2])
     
     # pplt.title("Input size vs. Table Storage and Cache size \n (Table scale: x2.00)", fontsize = 18)
     # pplt.xlabel("Input size (Number of words)", fontsize = 16)
