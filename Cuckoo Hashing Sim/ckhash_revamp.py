@@ -332,6 +332,11 @@ def update_sim_alt(table, cache, data_dict, loc_dict):
                 if(num_idxs_seen == 1000 * NUM_UPD_TERMS / PACE_SETTER):
                     outfile.write("\n")
     
+def update_sim_progressive(table, cache, data_dict, loc_dict):
+    NUM_UPD_TERMS = [50, 100, 150, 200, 250, 300, 350, 500, 750, 900]
+    for round_amt in NUM_UPD_TERMS:
+        for i in range(round_amt):
+            
 
 def place_data_BFS(data_dict, table, cache, max_swaps):
     """Places data into their place in the array via Breadth First Search. Handles swaps
