@@ -263,15 +263,75 @@ def update_sim(table, cache, data_dict, loc_dict):
                     cache.remove(stash_word)
                     for loc in data_dict[stash_word.word]:
                         loc_dict[loc].remove(stash_word)
-                        if (not loc_dict[loc]):
-                            loc_dict.pop(loc)
+                        # if (not loc_dict[loc]):
+                        #     loc_dict.pop(loc)
+                    if (s_idx not in loc_dict):
+                        continue
         num_idxs_seen += 1
         if (num_idxs_seen % 125 == 0):
             with open("MKSE_Research/Cuckoo Hashing Sim/Update_Sim/2_merge_NUT_150_R_1000.txt", "a+") as outfile:
                 # success_percentage = num_merges/NUM_UPD_TERMS
                 outfile.write(str(NUM_UPD_TERMS - num_merges) + ", ")
-                if(len(data_dict) > 9000):
+                if(num_idxs_seen == 1000):
                     outfile.write("\n")
+
+def update_sim_alt(table, cache, data_dict, loc_dict):
+    NUM_UPD_TERMS = 150
+    PACE_SETTER = 25
+
+    #loop thru data_dict and get NU_Terms
+    grabbed_terms = 0
+    num_merges = 0
+    num_idxs_seen = 0
+
+    for key in data_dict:
+        if (grabbed_terms == NUM_UPD_TERMS): #if we have all needed terms, stop
+            break
+        upd_word = word(key)
+        if upd_word in cache: #if the updword is already a cached term, continue
+            continue
+        #append cache word to cache and to loc_dict
+        cache.append(upd_word)
+        for possibility in data_dict[key]:
+            if (possibility in loc_dict):
+                loc_dict[possibility].append(upd_word)
+            else:
+                loc_dict[possibility] = []
+                loc_dict[possibility].append(upd_word)
+            
+        grabbed_terms += 1
+
+        if (grabbed_terms % PACE_SETTER == 0):
+            #Now a batch of 25 duplicates has been added
+            #Now make a selection of random points
+            NUM_RAND_PTS = 1000
+            rand_set = create_rand_set(NUM_RAND_PTS, len(table))
+            loc_set = set()
+            for loc in loc_dict:
+                loc_set.add(loc)
+            select_set = loc_set & rand_set
+
+            for s_idx in rand_set:
+                if (s_idx in select_set):
+                    for stash_word in loc_dict[s_idx]:
+                        if (stash_word == table[s_idx]): #match found
+                            num_merges += 1
+                            #merge occurs, now remove stash_word from the stash and loc_dict
+                            cache.remove(stash_word)
+                            for loc in data_dict[stash_word.word]:
+                                loc_dict[loc].remove(stash_word)
+                                # if (not loc_dict[loc]):
+                                #     loc_dict.pop(loc)
+                            if (s_idx not in loc_dict):
+                                continue
+                num_idxs_seen += 1
+                
+            with open("MKSE_Research/Cuckoo Hashing Sim/Update_Sim/alt_merge_NUT_150_R_1000.txt", "a+") as outfile:
+                # success_percentage = num_merges/NUM_UPD_TERMS
+                outfile.write(str(NUM_UPD_TERMS - num_merges) + ", ")
+                if(num_idxs_seen == 1000 * NUM_UPD_TERMS / PACE_SETTER):
+                    outfile.write("\n")
+    
 
 def place_data_BFS(data_dict, table, cache, max_swaps):
     """Places data into their place in the array via Breadth First Search. Handles swaps
@@ -437,7 +497,7 @@ if __name__ == "__main__":
     init_table(table, table_size)
     data_dict = hash_data(raw_data, table_size)
     loc_dict = place_data_RW(data_dict, table, cache, max_swaps)
-    update_sim(table, cache, data_dict, loc_dict)
+    update_sim_alt(table, cache, data_dict, loc_dict)
     # print(table)
     # print(cache)
     check_correct_RW(data_dict, table)

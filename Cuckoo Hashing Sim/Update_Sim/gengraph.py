@@ -1,12 +1,12 @@
 import matplotlib.pyplot as pplt
 
-input_sizes = [10, 100, 500, 1000, 1250, 2500, 3750, 5000, 6250, 7500, 8750, 10000]
-AVG_percentages = [.066, .673, 1.000, .570, .457, .207, .124, .113, .110, .085, .065, .055]
+input_sizes = [25, 50, 75, 100, 125, 150]
+AVG_updates = [148.2, 145.4, 142.2, 137.8, 129.7, 122.2]
 
-pplt.title("Input size vs. Avg. % Update Merges", fontsize = 18)
-pplt.xlabel("Input size (Number of words)", fontsize = 16)
-pplt.ylabel("Percentage of Merges", fontsize = 16)
-pplt.plot(input_sizes, AVG_percentages, marker = 'o', color = "#e02200")
-pplt.xlim(0, 10000) 
-pplt.ylim(0, 1)
-pplt.savefig("Merge_percentage_NUT_100_R_1000.png")
+pplt.title("Appended Updates vs Remaining Updates", fontsize = 18)
+pplt.xlabel("Num Updates Appended", fontsize = 16)
+pplt.ylabel("Num Remaining Updates", fontsize = 16)
+pplt.plot(input_sizes, AVG_updates, marker = 'o', color = "#e80ce8")
+pplt.xlim(0, 150) 
+pplt.ylim(0, 150)
+pplt.savefig("MKSE_Research/Cuckoo Hashing Sim/Update_Sim/alt_merge_percentage_NUT_150_R_1000.png")
