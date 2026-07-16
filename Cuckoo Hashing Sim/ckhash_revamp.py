@@ -253,16 +253,25 @@ def update_sim(table, cache, data_dict, loc_dict):
     select_set = loc_set & rand_set
     
     num_merges = 0
-    for s_idx in select_set:
-        for stash_word in loc_dict[s_idx]:
-            if (stash_word == table[s_idx]):
-                num_merges += 1
-    
-    with open("MKSE_Research/Cuckoo Hashing Sim/Update_Sim/merge_NUT_150_R_1000.txt", "a+") as outfile:
-        success_percentage = num_merges/NUM_UPD_TERMS
-        outfile.write(str(success_percentage) + ", ")
-        if(len(data_dict) > 9000):
-            outfile.write("\n")
+    num_idxs_seen = 0
+    for s_idx in rand_set:
+        if (s_idx in select_set):
+            for stash_word in loc_dict[s_idx]:
+                if (stash_word == table[s_idx]): #match found
+                    num_merges += 1
+                    #merge occurs, now remove stash_word from the stash and loc_dict
+                    cache.remove(stash_word)
+                    for loc in data_dict[stash_word.word]:
+                        loc_dict[loc].remove(stash_word)
+                        if (not loc_dict[loc]):
+                            loc_dict.pop(loc)
+        num_idxs_seen += 1
+        if (num_idxs_seen % 125 == 0):
+            with open("MKSE_Research/Cuckoo Hashing Sim/Update_Sim/2_merge_NUT_150_R_1000.txt", "a+") as outfile:
+                # success_percentage = num_merges/NUM_UPD_TERMS
+                outfile.write(str(NUM_UPD_TERMS - num_merges) + ", ")
+                if(len(data_dict) > 9000):
+                    outfile.write("\n")
 
 def place_data_BFS(data_dict, table, cache, max_swaps):
     """Places data into their place in the array via Breadth First Search. Handles swaps
@@ -420,7 +429,8 @@ if __name__ == "__main__":
     raw_data = sys.argv[1:]
     # raw_data = ["BIG", "SMALL", "HUGE", "TINY", "ENORMOUS", "MINISCULE"]
 
-    table_size = floor(len(raw_data) * scale)
+    # table_size = floor(len(raw_data) * scale)
+    table_size = 18000
     table = []
     cache = []
 
