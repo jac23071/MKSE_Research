@@ -11,7 +11,13 @@ num_updates = gen_x_axis(50, 1500)
 k10 = [82, 129, 175, 218, 261, 303, 344, 388, 429, 473, 511, 554, 591, 624, 652, 679, 711, 733, 766, 799, 829, 849, 869, 895, 923, 944, 971, 1000, 1029, 1046]
 k50 = [79, 113, 156, 187, 215, 239, 256, 274, 286, 298, 296, 308, 321, 328, 322, 341, 351, 361, 370, 377, 381, 386, 393, 389, 384, 387, 381, 385, 387, 396]
 k100 = [77, 113, 135, 146, 167, 182, 189, 191, 192, 185, 183, 193, 194, 196, 201, 204, 210, 212, 210, 203, 223, 224, 212, 204, 208, 211, 212, 215, 212, 214]
+k110 = [78, 109, 127, 141, 158, 168, 174, 168, 179, 181, 196, 203, 210, 197, 192, 196, 208, 208, 205, 202, 198, 185, 190, 183, 182, 192, 191, 194, 198, 198]
+k125 = [78, 106, 126, 135, 145, 153, 161, 159, 164, 168, 161, 161, 154, 164, 160, 170, 171, 170, 173, 175, 183, 179, 179, 175, 172, 177, 173, 182, 172, 169]
+k135 = [71, 96, 109, 120, 130, 141, 150, 147, 157, 161, 163, 161, 170, 178, 182, 184, 182, 185, 168, 160, 159, 147, 163, 169, 171, 170, 169, 172, 168, 164]
 k150 = [70, 97, 116, 137, 141, 144, 141, 144, 152, 146, 133, 139, 144, 140, 145, 143, 150, 155, 153, 160, 171, 161, 164, 160, 160, 162, 156, 161, 159, 158]
+k160 = [74, 99, 116, 133, 140, 134, 142, 146, 138, 148, 152, 140, 139, 139, 139, 145, 139, 147, 156, 154, 154, 145, 143, 158, 155, 149, 147, 142, 146, 149]
+k175 = [74, 95, 100, 112, 116, 119, 127, 113, 120, 123, 136, 137, 141, 127, 124, 118, 133, 132, 135, 126, 129, 126, 134, 144, 136, 125, 122, 131, 131, 131]
+k185 = [73, 96, 106, 117, 123, 123, 131, 122, 124, 130, 140, 142, 132, 126, 123, 124, 129, 128, 134, 136, 126, 128, 129, 125, 139, 133, 124, 119, 127, 128]
 k200 = [72, 93, 112, 118, 119, 117, 125, 118, 121, 118, 119, 112, 113, 113, 115, 114, 102, 107, 111, 127, 129, 119, 118, 130, 133, 129, 128, 129, 136, 116]
 k250 = [68, 79, 89, 94, 105, 107, 105, 107, 106, 109, 105, 105, 102, 100, 103, 97, 110, 111, 104, 105, 100, 91, 106, 105, 107, 99, 96, 95, 94, 107]
 k300 = [66, 83, 93, 95, 89, 96, 98, 92, 94, 99, 94, 84, 92, 89, 84, 87, 99, 91, 99, 103, 101, 105, 105, 99, 92, 92, 93, 95, 104, 91]
@@ -25,20 +31,20 @@ k600 = [59, 62, 58, 54, 63, 57, 56, 50, 61, 59, 58, 59, 58, 56, 67, 64, 61, 66, 
 pplt.title("Appended Updates vs Cache sizes", fontsize = 18)
 pplt.xlabel("Num Updates Appended", fontsize = 16)
 pplt.ylabel("Cache Sizes", fontsize = 16)
-# pplt.plot(num_updates, k10, marker = 'o', color = "#000000", label = "k = 10")
-# pplt.plot(num_updates, k50, marker = 'o', color = "#f21602", label = "k = 50")
-pplt.plot(num_updates, k100, marker = 'o', color = "#f26405", label = "k = 100")
+pplt.plot(num_updates, k110, marker = 'o', color = "#000000", label = "k = 110")
+pplt.plot(num_updates, k125, marker = 'o', color = "#f21602", label = "k = 125")
+pplt.plot(num_updates, k135, marker = 'o', color = "#f26405", label = "k = 135")
 pplt.plot(num_updates, k150, marker = 'o', color = "#f2af05", label = "k = 150")
-pplt.plot(num_updates, k200, marker = 'o', color = "#fff700", label = "k = 200")
-pplt.plot(num_updates, k250, marker = 'o', color = "#40ff00", label = "k = 250")
-pplt.plot(num_updates, k300, marker = 'o', color = "#00ffc3", label = "k = 300")
-pplt.plot(num_updates, k350, marker = 'o', color = "#00aeff", label = "k = 350")
-pplt.plot(num_updates, k400, marker = 'o', color = "#0011ff", label = "k = 400")
-pplt.plot(num_updates, k450, marker = 'o', color = "#9000ff", label = "k = 450")
-pplt.plot(num_updates, k500, marker = 'o', color = "#e80ce8", label = "k = 500")
-pplt.plot(num_updates, k550, marker = 'o', color = "#24a105", label = "k = 550")
-pplt.plot(num_updates, k600, marker = 'o', color = "#7a2f0c", label = "k = 600")
-# pplt.legend()
+pplt.plot(num_updates, k160, marker = 'o', color = "#fff700", label = "k = 160")
+pplt.plot(num_updates, k175, marker = 'o', color = "#40ff00", label = "k = 175")
+pplt.plot(num_updates, k185, marker = 'o', color = "#00ffc3", label = "k = 185")
+pplt.plot(num_updates, k200, marker = 'o', color = "#00aeff", label = "k = 200")
+# pplt.plot(num_updates, k400, marker = 'o', color = "#0011ff", label = "k = 400")
+# pplt.plot(num_updates, k450, marker = 'o', color = "#9000ff", label = "k = 450")
+# pplt.plot(num_updates, k500, marker = 'o', color = "#e80ce8", label = "k = 500")
+# pplt.plot(num_updates, k550, marker = 'o', color = "#24a105", label = "k = 550")
+# pplt.plot(num_updates, k600, marker = 'o', color = "#7a2f0c", label = "k = 600")
+pplt.legend()
 pplt.xlim(0, 1500) 
 pplt.ylim(0, 250)
-pplt.savefig("MKSE_Research/Cuckoo Hashing Sim/Update_Sim/p_merge_NUT_1500_R_100-600.png")
+pplt.savefig("MKSE_Research/Cuckoo Hashing Sim/Update_Sim/p_merge_NUT_1500_R_110-200.png")

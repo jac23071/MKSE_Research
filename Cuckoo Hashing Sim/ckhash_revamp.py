@@ -335,7 +335,7 @@ def update_sim_alt(table, cache, data_dict, loc_dict):
 def update_sim_progressive(table, cache, data_dict, loc_dict):
     NUM_UPD_TERMS = 1500
     PACE_SETTER = 50
-    NUM_RAND_PTS = 600
+    NUM_RAND_PTS = 185
     # K = 500
     # base_k = 50
     #loop thru data_dict and get NU_Terms
@@ -407,7 +407,7 @@ def update_sim_progressive(table, cache, data_dict, loc_dict):
             #                     if (s_idx not in loc_dict):
             #                         continue
 
-            with open("MKSE_Research/Cuckoo Hashing Sim/Update_Sim/p_merge_NUT_1500_R_600.txt", "a+") as outfile:
+            with open("MKSE_Research/Cuckoo Hashing Sim/Update_Sim/p_merge_NUT_1500_R_185.txt", "a+") as outfile:
                 # success_percentage = num_merges/NUM_UPD_TERMS
                 outfile.write(str(len(cache)) + ", ")
                 if(num_idxs_seen == NUM_RAND_PTS * NUM_UPD_TERMS):
