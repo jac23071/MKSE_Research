@@ -335,8 +335,9 @@ def update_sim_alt(table, cache, data_dict, loc_dict):
 def update_sim_progressive(table, cache, data_dict, loc_dict):
     NUM_UPD_TERMS = 1500
     PACE_SETTER = 50
-    k = 50
-    base_k = 50
+    NUM_RAND_PTS = 600
+    # K = 500
+    # base_k = 50
     #loop thru data_dict and get NU_Terms
     grabbed_terms = 0
     num_merges = 0
@@ -359,19 +360,18 @@ def update_sim_progressive(table, cache, data_dict, loc_dict):
                 loc_dict[possibility].append(upd_word)
         
         #Now make a selection of random points
-        NUM_RAND_PTS = 1000
         rand_set = create_rand_set(NUM_RAND_PTS, len(table))
         loc_set = set()
         for loc in loc_dict:
             loc_set.add(loc)
         select_set = loc_set & rand_set
-        # if (k == 40):
-        #             print("Check here")
+        # if (grabbed_terms % PACE_SETTER == 0):
+        #     print("Check here")
 
         for s_idx in rand_set:
             if (s_idx in select_set):
                 for stash_word in loc_dict[s_idx]:
-                    if (stash_word == table[s_idx] and num_merges < k): #match found
+                    if (stash_word == table[s_idx]): #match found
                         num_merges += 1
                         #merge occurs, now remove stash_word from the stash and loc_dict
                         cache.remove(stash_word)
@@ -386,33 +386,33 @@ def update_sim_progressive(table, cache, data_dict, loc_dict):
         grabbed_terms += 1
         if (grabbed_terms % PACE_SETTER == 0):
             #Now a batch of 50 duplicates has been added
-            while (num_merges < k):
-                rand_set = create_rand_set(NUM_RAND_PTS, len(table))
-                loc_set = set()
-                for loc in loc_dict:
-                    loc_set.add(loc)
-                select_set = loc_set & rand_set
+            # while (num_merges < k):
+            #     rand_set = create_rand_set(NUM_RAND_PTS, len(table))
+            #     loc_set = set()
+            #     for loc in loc_dict:
+            #         loc_set.add(loc)
+            #     select_set = loc_set & rand_set
 
-                for s_idx in rand_set:
-                    if (s_idx in select_set):
-                        for stash_word in loc_dict[s_idx]:
-                            if (stash_word == table[s_idx]): #match found
-                                num_merges += 1
-                                #merge occurs, now remove stash_word from the stash and loc_dict
-                                cache.remove(stash_word)
-                                for loc in data_dict[stash_word.word]:
-                                    loc_dict[loc].remove(stash_word)
-                                    # if (not loc_dict[loc]):
-                                    #     loc_dict.pop(loc)
-                                if (s_idx not in loc_dict):
-                                    continue
+            #     for s_idx in rand_set:
+            #         if (s_idx in select_set):
+            #             for stash_word in loc_dict[s_idx]:
+            #                 if (stash_word == table[s_idx]): #match found
+            #                     num_merges += 1
+            #                     #merge occurs, now remove stash_word from the stash and loc_dict
+            #                     cache.remove(stash_word)
+            #                     for loc in data_dict[stash_word.word]:
+            #                         loc_dict[loc].remove(stash_word)
+            #                         # if (not loc_dict[loc]):
+            #                         #     loc_dict.pop(loc)
+            #                     if (s_idx not in loc_dict):
+            #                         continue
 
-            with open("MKSE_Research/Cuckoo Hashing Sim/Update_Sim/p_merge_NUT_1500_K_50.txt", "a+") as outfile:
+            with open("MKSE_Research/Cuckoo Hashing Sim/Update_Sim/p_merge_NUT_1500_R_600.txt", "a+") as outfile:
                 # success_percentage = num_merges/NUM_UPD_TERMS
                 outfile.write(str(len(cache)) + ", ")
-                if(num_idxs_seen == 1000 * NUM_UPD_TERMS):
+                if(num_idxs_seen == NUM_RAND_PTS * NUM_UPD_TERMS):
                     outfile.write("\n")
-            k += base_k
+            # k += base_k
 
 
             
